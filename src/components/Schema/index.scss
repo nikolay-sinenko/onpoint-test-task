@@ -1,0 +1,26 @@
+.wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center bottom;
+}
+
+.heading {
+    font-family: var(--ff-gotham);
+    font-weight: 400;
+    font-size: 32px;
+    color: var(--clr-text-white);
+    margin: 3em 2.5em 1em;
+}
+
+.content {
+    width: 100%;
+    margin: 1em auto auto;
+
+    & img {
+        margin: auto;
+    }
+}

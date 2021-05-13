@@ -1,0 +1,9 @@
+.background {
+    background:
+        url('@img/bg_iceberg_bot.webp') center 24% / 80%,
+        url('@img/bg_depth.webp') center bottom / 100% 72%,
+        url('@img/bg_iceberg_top.webp') center 24% / 80%,
+        url('@img/bg_sky.webp') center top / contain;
+    background-attachment: local;
+    background-repeat: no-repeat;
+}

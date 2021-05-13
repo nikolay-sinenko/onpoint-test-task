@@ -1,0 +1,88 @@
+/*
+    GothamPro
+*/
+
+@font-face {
+    font-family: 'GothamPro';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/GothamPro-Light-subset.woff2') format('woff2'),
+         url('@fonts/GothamPro-Light-subset.zopfli.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'GothamPro';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/GothamPro-Regular-subset.woff2') format('woff2'),
+         url('@fonts/GothamPro-Regular-subset.zopfli.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'GothamPro';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/GothamPro-Medium-subset.woff2') format('woff2'),
+         url('@fonts/GothamPro-Medium-subset.zopfli.woff') format('woff');
+}
+
+/* 
+    Lato
+*/
+
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/Lato-Light-subset.woff2') format('woff2'),
+         url('@fonts/Lato-Light-subset.zopfli.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/Lato-Regular-subset.woff2') format('woff2'),
+         url('@fonts/Lato-Regular-subset.zopfli.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/Lato-Medium-subset.woff2') format('woff2'),
+         url('@fonts/Lato-Medium-subset.zopfli.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/Lato-Semibold-subset.woff2') format('woff2'),
+         url('@fonts/Lato-Semibold-subset.zopfli.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: local(''),
+         url('@fonts/Lato-Bold-subset.woff2') format('woff2'),
+         url('@fonts/Lato-Bold-subset.zopfli.woff') format('woff');
+}
