@@ -1,125 +1,188 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
-import _ from 'lodash'
 import classNames from 'classnames/bind'
 import style from './index.scss'
 const cx = classNames.bind(style)
 
+
+/*
+    Контрол-слайдер
+*/
+
 const Slider = ({ 
-    name, 
-    value, 
-    labels, 
-    maxValue, 
-    onChange
+    value,      //  Начальное значение
+    maxValue,   //  Максимальное значение
+    labels,     //  Подписи к точкам слайда
+    onChange,   //  Callback компонента-родителя
+    name        //  Опциональное свойство для генерации key-аттрибута у подписей
 }) => {
 
-    const span = Math.floor(100 / (maxValue - 1 || 1));
-    const treshhold = span / 2;
-    const snapArea = treshhold / 1.5;
+    //  Расстояние между точками слайдера
+    const pointsDistance = Math.floor(100 / (maxValue - 1 || 1));
+    //  Радиус привязки ползунка к точке
+    const threshold = pointsDistance / 2;
  
-    const [current, setCurrent] = useState(value);
+    //  Стейт для хранения текущего значения
+    const [currentValue, setCurrentValue] = useState(value);
 
+    //  Ссылка на DOM-элемент ползунка
     const refThumb = useRef();
+    //  Ссылка на DOM-элемент всего слайдера
     const refSlider = useRef();
 
-    useEffect(useCallback(() => {
-        snap(value);
-    }), [value]);
-
-    useEffect(useCallback(() => {
-        snap(current);
-        onChange(current);
-    }), [current]);
-
+    //  Хук, который срабатывает при изменении занчения контрола
+    //  из компонента-родителя
     useEffect(() => {
-        const thumb = refThumb.current;
-        const slider = refSlider.current;
+        //  Привязываем ползунок к точке,
+        //  которая соответствует значению компонента-родителя
+        snapThumbToPoint(value);
+    }, [value]);
 
-        [ thumb, slider ].forEach(el => {
-            el.addEventListener('mousedown', handleDragStart);
+    //  Хук, который срабатывает при изменении значения контрола
+    //  в контексте самого компонента
+    useEffect(() => {
+        //  Вызывем callback компонента-родителя
+        onChange(currentValue);
+    }, [currentValue])
 
-            el.addEventListener('touchstart', handleDragStart, { passive: false });
-            el.addEventListener('touchmove', handleDrag);
-            el.addEventListener('touchend', handleDragEnd);
-        })
-        
-        return () => {
-            [ thumb, slider ].forEach(el => {
-                el.removeEventListener('mousedown', handleDragStart);
-                el.removeEventListener('touchstart', handleDragStart);
-                el.removeEventListener('touchmove', handleDrag);
-                el.removeEventListener('touchend', handleDragEnd);
-            })
-        }
+    /*
+        Обработчики событий drag'а
+    */
 
-    }, []);
+    //  Обработчик начала drag'а
+    const handleDragStart = (event) => {
+        event.stopPropagation();
 
-    const handleDragStart = (e) => {
-        changePos(e);
+        //  Перемещаем ползунок и вычисляем новое значение
+        const newValue = changeThumbPosition(event);
 
+        //  Привязываем ползунок к новой точке
+        snapThumbToPoint(newValue);
+
+        //  Меняем значение контрола на новое
+        setCurrentValue(newValue);
+
+        //  Добавляем глобально обработчики drag'а
+        //  для событий мыши
         window.onmouseup = handleDragEnd;
-        window.onmousemove = handleDrag;
-    };
-
-    const handleDragEnd = (e) => {
-        const curr = findSpan(changePos(e));
-
-        snap(curr)
-        setCurrent(curr);
-
-        window.onmouseup = window.onmousemove = null;
-    };
-
-    const handleDrag = _.debounce((e) => {
-        const curr = findSpan(changePos(e), snapArea);
-        
-        if (curr < 0) return;
-        
-        snap(curr);
-        setCurrent(curr);
-
-    }, 10);
-
-    const changePos = (e) => {
-
-        const slider = refSlider.current;
-
-        let x = e.clientX || e.changedTouches[0].clientX;
-        x -= slider.offsetLeft;
-
-        x = _.clamp(x, 0, slider.clientWidth);
-
-        let pos = Math.floor(x / slider.clientWidth * 100);
-        
-        moveTo(pos);
-        return pos;
-    };
-
-    const snap = (idx) => {
-        moveTo(idx * span, "var(--transition-snap)");
+        window.onmousemove = handleDragMove;
     }
 
-    const moveTo = (position, transition = null) => {
+    //  Обработчик окончания
+    const handleDragEnd = (event) => {
+        event.stopPropagation();
+
+        //  Перемещаем ползунок и вычисляем новое значение
+        const newValue = changeThumbPosition(event);
+
+        //  Привязываем ползунок к новой точке
+        snapThumbToPoint(newValue);
+
+        //  Меняем значение контрола на новое
+        setCurrentValue(newValue);
+
+        //  Удаляем обработчики
+        window.onmouseup = null;
+        window.onmousemove = null;
+    };
+
+
+    //  Обработчик перемещения
+    const handleDragMove = (event) => {
+        event.stopPropagation();
+
+        //  Перемещаем ползунок и вычисляем новое значение
+        const newValue = changeThumbPosition(event);
+
+        //  Меняем значение контрола на новое
+        setCurrentValue(newValue);
+    };
+
+    /*
+        Вспомогательные функции
+    */
+
+    //  Функиця для перемещения ползунка
+    //  и расчёта нового значения контрола
+    const changeThumbPosition = (event) => {
+
+        //  Получаем DOM-элемент слайдера
+        const slider = refSlider.current;
+   
+        //  Получаем координату по оси X из объекта события
+        let x = event.clientX || event.changedTouches[0].clientX;
+        //  Вычитаем отступ слайдера от левого края
+        x -= slider.offsetLeft;
+      
+        //  Нормализуем координату
+        if (x < 0) x = 0;
+        if (x > slider.clientWidth) x = slider.clientWidth;
+
+        //  Расчитываем новое положение ползунка
+        const newPosition = Math.floor(x / slider.clientWidth * 100);
+        
+        //  Перемещаем его
+        moveThumb(newPosition);
+
+        //  Рассчитываем новое значение контрола
+        const newValue = findPointIndex(newPosition);
+
+        //  Если полузнок не попал в область ни одной точки
+        if (newValue < 0) 
+        {
+            //  Привязываем его к текущему значению
+            snapThumbToPoint(currentValue);
+            //  Возвращаем текущее значение
+            return currentValue;
+        }
+        //  Возвращаем новое значение
+        return newValue;
+    };
+
+    //  Функиця привязки ползунка к точке с плавной анимацией
+    const snapThumbToPoint = (pointIndex) => {
+        moveThumb(pointIndex * pointsDistance, "var(--transition-snap)");
+    }
+
+    //  Функция перемещения ползунка по треку (по муолчанию без анимации)
+    const moveThumb = (position, transition = null) => {
         refThumb.current.style.transition = transition;
         refSlider.current.style.setProperty('--position', position);
     };
 
-    const findSpan = (pos, area = treshhold) => (
-        _.times(maxValue, (idx) => (
-            pos >= idx * span - area && 
-            pos <= idx * span + area
-        )).findIndex(x => x)
-    );
+    //  Функция для расчёта индекса точки, в области которой находится ползунок
+    const findPointIndex = (position) => {
+        
+        // Итерируем по всем точкам
+        for(var index = 0; index < maxValue; index++)
+        {
+            // Ищем первую, в чью область попал ползунок
+            if (
+                position >= index * pointsDistance - threshold &&
+                position <= index * pointsDistance + threshold
+            ) return index;
+        }
+
+        //  Если область не найдена, 
+        //  возвращаем отрицательное значение
+        return -1;
+    }
+    
+    /*
+        Отображение компонента
+    */
 
     return(
-        <div ref={refSlider} className={cx('container')} >
+        <div 
+            ref={refSlider} 
+            className={cx('container')} 
+            onMouseDown={handleDragStart}
+            onTouchStart={handleDragStart}
+            onTouchMove={handleDragMove}
+            onTouchEnd={handleDragEnd}
+        >
             <div className={cx('track')}>
-                <button 
-                    ref={refThumb}
-                    type="button" 
-                    className={cx('thumb')}
-                >
-                </button>
+                <div ref={refThumb} className={cx('thumb')}></div>
             </div>
             <ul className={cx('legend')}>
                 {labels.map((label, idx) => (

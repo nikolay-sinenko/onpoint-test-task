@@ -1,32 +1,44 @@
 import React from 'react'
 
-import _ from 'lodash'
+import lodash from 'lodash'
 import classNames from 'classnames/bind'
 import style from './index.scss'
 const cx = classNames.bind(style)
 
+/*
+    Контрол-пагинация
+*/
+
 const Pagination = ({ 
-    name,
-    value,
-    maxValue,
-    onChange
+    value,      //  Начальное значение
+    maxValue,   //  Максимальное значение
+    onChange,   //  Callback компонента-родителя
+    name        //  DOM-свойство name для группирования radio-input'ов
 }) => {
 
-    const handleChange = _.debounce(({ target: { value }}) => {
-        onChange(value);
-    }, 10)
+    /*
+        Обработчик изменения значения radio-input'ов
+    */
+    const handleChange = (event) => {
+        //  Приводим значение к числовому типу
+        //  т.к. по умолчанию value имеет строчный тип
+        onChange(parseInt(event.target.value));
+    }
 
+    /*
+        Отображение компонента
+    */
     return (
         <div className={cx('container')} >
-            {_.times(maxValue, (idx) => (
+            {lodash.times(maxValue, (index) => (
                 <input
                     className={cx('dot')}
                     type="radio" 
                     name={name} 
-                    key={`${name}-${idx}`}
+                    key={`${name}-${index}`}
                     onChange={handleChange}
-                    checked={idx == value}
-                    value={idx}
+                    checked={index == value}
+                    value={index}
                 />
             ))}
         </div>

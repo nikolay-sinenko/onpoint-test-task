@@ -9,19 +9,22 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 
+    overflow: hidden;
+
     &::-webkit-scrollbar {
         width: 1px;
         height: 1px;
     }
 
     &--vertical {
-        overflow: hidden auto;
-        scroll-snap-type: y mandatory;
+        // overflow: hidden auto;
+        // scroll-snap-type: y mandatory;
+        z-index: 1;
     }
 
     &--horizontal {
-        overflow: auto hidden;
-        scroll-snap-type: x mandatory;
+        // overflow: auto hidden;
+        // scroll-snap-type: x mandatory;
         display: flex;
     }
 }

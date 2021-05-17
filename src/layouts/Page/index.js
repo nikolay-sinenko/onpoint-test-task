@@ -16,6 +16,10 @@ import Schema from '@components/Schema';
 const MainScroll = withControl(Pagination, { name: "dots-control"});
 const InnerScroll = withControl(Slider);
 
+/*
+    Компонент самого приложения
+*/
+
 function Page() {
     return(
         <MainScroll classNames={cx('background')} vertical>

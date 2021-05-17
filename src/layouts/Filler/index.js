@@ -4,6 +4,10 @@ import classNames from 'classnames/bind'
 import style from './index.scss'
 const cx = classNames.bind(style)
 
+/*
+    Второй экран
+*/
+
 const Filler = () => {
     return (
         <div className={cx('wrapper')}>
